@@ -1,1 +1,3 @@
-export class AuthService {}
+export class AuthService {
+  async register() {}
+}

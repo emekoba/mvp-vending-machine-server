@@ -40,6 +40,10 @@ export class RegisterReq {
   @IsString()
   username: string;
 
+  @IsNotEmpty()
+  @IsString()
+  role: string;
+
   @IsEmail()
   @IsOptional()
   @ValidateIf((o) => !o.phoneNumber || o.email)
@@ -57,17 +61,6 @@ export class RegisterReq {
   @IsNotEmpty()
   @Match('password')
   confirmPassword: string;
-
-  @IsNotEmpty()
-  @IsString()
-  gender: string;
-
-  @IsNotEmpty()
-  dateOfBirth: string;
-
-  @IsNotEmpty()
-  @IsString()
-  address: string;
 }
 
 export class RegisterRes {

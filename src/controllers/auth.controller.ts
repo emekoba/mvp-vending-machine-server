@@ -1,10 +1,25 @@
-import { Controller, Get, Post, Req, Res } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
+import { Response, Request } from 'express';
+import { appMessages } from 'src/constants';
+import { RegisterRes } from 'src/dto/auth.dto';
 
-@Controller()
+@Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('register')
-  async register(@Req() req: Request, @Res() resp: Response) {}
+  @Post('create')
+  async create(@Req() req: Request, @Res() resp: Response) {
+    const { createdUser, success }: RegisterRes =
+      await this.authService.register(req.body);
+
+    if (success) {
+      resp.json({
+        success,
+        message: appMessages.registerSuccessful,
+        status: HttpStatus.CREATED,
+        createdUser,
+      });
+    }
+  }
 }

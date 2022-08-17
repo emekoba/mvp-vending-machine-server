@@ -15,7 +15,7 @@ export const ModuleConfigs = {
   app: {
     entities: [User, Product],
   },
-  auth: {
+  user: {
     entities: [User],
   },
 };
@@ -32,11 +32,29 @@ export const GET_ALL_ENTITIES = () => [
 ];
 
 export const appMessages = {
-  productCreated: 'new product created successfully',
-  registerSuccessful: 'user registered successfully',
+  productCreated: 'new product created successfully ',
+  registerSuccessful: 'user registered successfully ',
+  loginSuccess: '',
+  fetchedUser: '',
+  updateSuccessful: '',
+  deletedUser: 'user deleted successfully ',
 };
 
 export const appErrors = {
-  dupEmailQuery: '',
-  saveUser: 'could not save user to db',
+  findUser: 'error querying user db ',
+  saveUser: 'could not save user to db ',
+  dupEmailQuery: 'query for duplicate email failed ',
+  invalidPassword: '',
+  checkingPassword: '',
+  tokenCreate: '',
+  userTokenUpdate: '',
+  loginFailed: '',
+  fetchFailed: '',
+  updateFailed: '',
+  noTokenIdMatch: '',
+  invalidToken: '',
+  noCookieTokenPassed: '',
+  noAuthTokenPassed: '',
+  deleteFailed: '',
+  usernameTaken: 'username already taken',
 };

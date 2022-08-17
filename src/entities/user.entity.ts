@@ -18,16 +18,10 @@ export class User {
   products: Product[];
 
   @Column({ type: 'varchar' })
-  firstName: string;
-
-  @Column({ type: 'varchar' })
-  lastName: string;
-
-  @Column({ type: 'varchar' })
-  email: string;
-
-  @Column({ type: 'varchar' })
   username: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  token: string;
 
   @Column({ type: 'varchar' })
   password: string;

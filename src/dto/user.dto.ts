@@ -1,41 +1,14 @@
 import {
-  IsEmail,
   IsNotEmpty,
-  IsOptional,
   IsString,
   Matches,
   MaxLength,
   MinLength,
-  ValidateIf,
 } from 'class-validator';
 import { Match } from 'src/utils/decorators';
 import { User } from 'src/entities/user.entity';
 
-export class LoginReq {
-  @IsNotEmpty()
-  @IsEmail()
-  email?: string;
-  @IsString()
-  username?: string;
-  @IsNotEmpty()
-  @IsNotEmpty()
-  password: string;
-}
-
-export class LoginRes {
-  user: User;
-  success: boolean;
-  token: string;
-}
-
 export class RegisterReq {
-  @IsString()
-  firstName: string;
-
-  @IsNotEmpty()
-  @IsString()
-  lastName: string;
-
   @IsNotEmpty()
   @IsString()
   username: string;
@@ -44,10 +17,9 @@ export class RegisterReq {
   @IsString()
   role: string;
 
-  @IsEmail()
-  @IsOptional()
-  @ValidateIf((o) => !o.phoneNumber || o.email)
-  email: string;
+  @IsNotEmpty()
+  @IsString()
+  deposit: string;
 
   @IsString()
   @MinLength(8)
@@ -55,7 +27,6 @@ export class RegisterReq {
   @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
     message: 'password too weak',
   })
-  //@Matches((?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]))
   password: string;
 
   @IsNotEmpty()
@@ -66,4 +37,38 @@ export class RegisterReq {
 export class RegisterRes {
   success: boolean;
   createdUser: User;
+}
+
+export class FetchUserRes {
+  user: User;
+  success: boolean;
+}
+
+export class UpdateUserReq {
+  @IsString()
+  @IsNotEmpty()
+  userId: string;
+  username: string;
+  role: string;
+  deposit: string;
+}
+
+export class UpdateUserRes {
+  success: boolean;
+  updatedUser: User;
+}
+
+export class LoginReq {
+  @IsString()
+  username?: string;
+
+  @IsNotEmpty()
+  @IsNotEmpty()
+  password: string;
+}
+
+export class LoginRes {
+  user: User;
+  success: boolean;
+  token: string;
 }

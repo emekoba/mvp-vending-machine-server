@@ -1,14 +1,20 @@
+import * as winston from 'winston';
+const { combine, label, timestamp, printf } = winston.format;
 class toEnumDto {
   enum: any;
   value: string;
 }
+class fromEnumDto {
+  enum: any;
+  value: any;
+}
 
-export function isEmpty(str: any) {
+export function isEmpty(val: any): boolean {
   return (
-    str === undefined ||
-    str === null ||
-    typeof str !== 'string' ||
-    str.match(/^ *$/) !== null
+    val === undefined ||
+    val === null ||
+    typeof val !== 'string' ||
+    val.match(/^ *$/) !== null
   );
 }
 
@@ -29,18 +35,26 @@ export function generateRandomHash(length: number): string {
   return result;
 }
 
-export function toEnum(args: toEnumDto): any {
+export function fromEnum(args: fromEnumDto): any {
   let resolution: string;
 
+  // console.log(args.enum, args.enum[args.value.toString()]);
   resolution = args.value
-    ? args.enum[args.value.toString()]
-    : Object.keys(args.enum)[0];
+    ? args.enum[args.value]
+    : args.enum[Object.keys(args.enum)[0]];
 
   return resolution;
 }
 
-import * as winston from 'winston';
-const { combine, label, timestamp, printf } = winston.format;
+export function toEnum(args: toEnumDto): any {
+  let resolution: string;
+
+  resolution = args.value
+    ? args.enum[args.value.toString().toUpperCase()]
+    : Object.keys(args.enum)[0];
+
+  return resolution;
+}
 
 class Logger {
   private readonly LOG_FILE = {
@@ -120,3 +134,51 @@ class Logger {
 }
 
 export default new Logger();
+
+const metaDataKey = Symbol();
+
+export const UseMiddleware =
+  (...arg: Array<string>) =>
+  (target, propertyValue, props: PropertyDescriptor) => {
+    const funcObj = Reflect.getMetadata(metaDataKey, target);
+    const middlewares = arg.map((item) => funcObj[item]);
+    const temp = props.value;
+
+    props.value = async function (req, resp) {
+      for (const index in middlewares) {
+        try {
+          await middlewares[index].apply(this, [
+            req,
+            resp,
+            () => {
+              throw 'exited: ' + Object.keys(funcObj)[index];
+            },
+          ]);
+        } catch (exp) {
+          console.log(exp);
+          if (!/exited/g.test(exp)) throw exp;
+        }
+      }
+      try {
+        await temp.apply(this, [
+          req,
+          resp,
+          () => {
+            throw 'exited main route';
+          },
+        ]);
+      } catch (exp) {
+        console.log(exp);
+        if (!/exited/g.test(exp)) throw exp;
+      }
+    };
+  };
+
+export function Middleware(target, propName, prop: PropertyDescriptor) {
+  const funcObj = Reflect.getMetadata(metaDataKey, target) || {};
+  Reflect.defineMetadata(
+    metaDataKey,
+    { ...funcObj, [propName]: prop.value },
+    target,
+  );
+}

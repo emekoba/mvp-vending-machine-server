@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   Req,
   Res,
 } from '@nestjs/common';
@@ -75,7 +76,7 @@ export class UserController {
     }
   }
 
-  @Post('update')
+  @Put('update')
   async update(
     @Req() req: Request,
     @Res() resp: Response,

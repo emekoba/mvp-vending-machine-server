@@ -44,6 +44,8 @@ export class UserService {
     let decodedDate: Date;
 
     if (options.useCookies) {
+      console.log(req.cookies);
+
       const token = req.cookies['jwt'];
 
       try {

@@ -21,6 +21,9 @@ export const ModuleConfigs = {
   product: {
     entities: [Product, User],
   },
+  transactions: {
+    entities: [Product, User],
+  },
 };
 
 export const GET_ALL_ENTITIES = () => [

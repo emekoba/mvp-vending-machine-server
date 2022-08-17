@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   Req,
   Res,
 } from '@nestjs/common';
@@ -93,8 +94,8 @@ export class ProductController {
     }
   }
 
-  @Post('update')
-  // @UseMiddleware('sessionGuard')
+  @Put('update')
+  @UseMiddleware('sessionGuard')
   async update(
     @Req() req: Request,
     @Res() resp: Response,
@@ -122,6 +123,7 @@ export class ProductController {
   }
 
   @Delete('delete/:id')
+  // @UseMiddleware('sessionGuard')
   async delete(@Res() resp: Response, @Param('id') id: string) {
     const { success } = await this.productService.deleteProduct(id);
 

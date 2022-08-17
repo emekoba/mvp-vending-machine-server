@@ -13,10 +13,13 @@ export const jwtConfig = JwtModule.register({
 
 export const ModuleConfigs = {
   app: {
-    entities: [User, Product],
+    entities: [],
   },
   user: {
     entities: [User],
+  },
+  product: {
+    entities: [Product, User],
   },
 };
 
@@ -57,4 +60,20 @@ export const appErrors = {
   noAuthTokenPassed: '',
   deleteFailed: '',
   usernameTaken: 'username already taken',
+};
+
+export const productMessages = {
+  createdProduct: '',
+  fetchedProduct: '',
+  updateSuccessful: '',
+  deletedSuccessful: '',
+};
+
+export const productErrors = {
+  createProduct: '',
+  saveProduct: '',
+  findProduct: ' ',
+  fetchFailed: '',
+  updateFailed: '',
+  deleteFailed: '',
 };

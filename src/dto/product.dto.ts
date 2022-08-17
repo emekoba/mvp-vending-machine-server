@@ -11,21 +11,43 @@ import {
 } from 'class-validator';
 import { Product } from 'src/entities/product.entity';
 
-export class createProductReq {
+export class CreateProductReq {
   @IsNotEmpty()
   @IsString()
-  amountAvailable;
+  amountAvailable: string;
 
   @IsNotEmpty()
   @IsString()
-  cost;
+  cost: string;
 
   @IsNotEmpty()
   @IsString()
-  productName;
+  productName: string;
 }
 
-export class createProductRes {
+export class CreateProductRes {
   success: boolean;
   newProduct: Product;
+}
+
+export class FetchProductRes {
+  success: boolean;
+  product: Product;
+}
+
+export class FetchProductReq {
+  productId: string;
+  userId: string;
+}
+
+export class UpdateProductReq {
+  productId: string;
+  amountAvailable: string;
+  cost: string;
+  productName: string;
+}
+
+export class UpdateProductRes {
+  success: boolean;
+  updatedProduct: Product;
 }

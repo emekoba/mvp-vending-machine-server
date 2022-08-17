@@ -19,12 +19,12 @@ export class Product {
   user: User;
 
   @Column({ type: 'varchar' })
-  productName: boolean;
+  productName: string;
 
-  @Column({ type: 'boolean', default: false })
-  amountAvailable: boolean;
+  @Column({ type: 'varchar', default: '0' })
+  amountAvailable: string;
 
-  @Column({ type: 'boolean', default: false })
+  @Column({ type: 'varchar', default: '0' })
   cost: string;
 
   @CreateDateColumn({ type: 'timestamp' })

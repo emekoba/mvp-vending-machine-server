@@ -37,6 +37,7 @@ export class ProductController {
   }
 
   @Post('create')
+  @UseMiddleware('sessionGuard')
   async create(
     @Req() req: Request,
     @Res() resp: Response,
@@ -64,17 +65,14 @@ export class ProductController {
   }
 
   @Get(':id')
-  // @UseMiddleware('sessionGuard')
   async read(
     @Req() req: Request,
     @Res() resp: Response,
     @Param('id') productId: string,
   ) {
-    // console.log(req.body.user.id);
     const { success, product } = await this.productService.fetchProduct({
       productId,
-      userId: '',
-      //  req.body.user.id,
+      // user: req.body.user,
     });
 
     if (success) {
@@ -150,8 +148,12 @@ export class ProductController {
   }
 
   @Delete('delete/:id')
-  // @UseMiddleware('sessionGuard')
-  async delete(@Res() resp: Response, @Param('id') id: string) {
+  @UseMiddleware('sessionGuard')
+  async delete(
+    @Req() req: Request,
+    @Res() resp: Response,
+    @Param('id') id: string,
+  ) {
     const { success } = await this.productService.deleteProduct(id);
 
     if (success) {

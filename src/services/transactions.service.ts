@@ -63,11 +63,14 @@ export class TransactionService {
   }
 
   async buy(amount: string, userId: string): Promise<BuyRes> {
-    let newProduct: Product;
+    let product: Product;
+    let moneySpent;
+    let productName;
+    let changed;
 
     // //* save new user values
     // try {
-    //   newProduct = await this.productRepo.save({
+    //   product = await this.productRepo.save({
     //     amountAvailable,
     //     cost,
     //     productName,
@@ -83,6 +86,33 @@ export class TransactionService {
     //     HttpStatus.NOT_IMPLEMENTED,
     //   );
     // }
+
+    return {
+      moneySpent,
+      productName,
+      changed,
+      success: true,
+    };
+  }
+
+  async reset(user: User): Promise<any> {
+    //* save new user values
+    try {
+      await this.userRepo.save({
+        ...user,
+        deposit: '0',
+      });
+    } catch (e) {
+      Logger.error(e);
+
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: userErrors.updateUser + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
 
     return {
       success: true,

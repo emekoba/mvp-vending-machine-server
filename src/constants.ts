@@ -60,8 +60,8 @@ export const userErrors = {
   loginFailed: 'login failed',
   fetchFailed: 'failed to fetch user ',
   updateFailed: 'failed to update user ',
-  noTokenIdMatch: '',
-  invalidToken: '',
+  noTokenIdMatch: 'invalid destructured Id',
+  invalidToken: 'token expired. Please login to continue',
   noCookieTokenPassed: '',
   noAuthTokenPassed: '',
   deleteFailed: 'failed to delete user ',
@@ -79,7 +79,7 @@ export const productMessages = {
 export const productErrors = {
   createProduct: 'failed to create product ',
   saveProduct: 'failed to save product ',
-  findProduct: 'failed to find product ',
+  queryProduct: 'failed to query product ',
   fetchFailed: 'failed to fetch product ',
   updateFailed: 'failed to update product ',
   deleteFailed: 'failed to delete product ',
@@ -87,10 +87,14 @@ export const productErrors = {
 
 export const transactionMessages = {
   depositSuccessful: 'deposit successful ',
+  resetSuccessful: 'reset successful ',
 };
 
 export const transactionErrors = {
   invalidAmount:
     'users can deposit only 5, 10, 20, 50 and 100 cent coins into their vending machine account ',
   depositFailed: 'faild to deposit amount ',
+  walletEmpty: 'your account is empty. deposit some money to continue ',
+  notBuyer: 'User must be buyer to proceed ',
+  resetFailed: 'Failed to reset user ',
 };

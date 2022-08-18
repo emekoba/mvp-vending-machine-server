@@ -20,16 +20,16 @@ export class ProductService {
   ) {}
 
   async createProduct(payload: CreateProductReq): Promise<CreateProductRes> {
-    const { amountAvailable, cost, productName } = payload;
-
+    const { amountAvailable, cost, productName, user } = payload;
     let newProduct: Product;
 
-    //* save new user values
+    //* save new product values
     try {
       newProduct = await this.productRepo.save({
         amountAvailable,
         cost,
         productName,
+        user,
       });
     } catch (e) {
       Logger.error(e);
@@ -50,7 +50,7 @@ export class ProductService {
   }
 
   async fetchProduct(payload: FetchProductReq): Promise<FetchProductRes> {
-    const { productId, userId } = payload;
+    const { productId } = payload;
 
     let product: Product;
 
@@ -59,16 +59,16 @@ export class ProductService {
       product = await this.productRepo.findOne({
         where: {
           id: productId,
-          // user: { id: userId }
+          // user: { id: user.id },
         },
       });
     } catch {
-      Logger.error(productErrors.findProduct);
+      Logger.error(productErrors.queryProduct);
 
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: productErrors.findProduct,
+          error: productErrors.queryProduct,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
@@ -94,16 +94,16 @@ export class ProductService {
   async fetchAllProducts(): Promise<FetchAllProductsRes> {
     let products: Product[];
 
-    //* check if username already exists
+    //* fetch all users
     try {
-      products = await this.productRepo.find({});
-    } catch {
-      Logger.error(productErrors.findProduct);
+      products = await this.productRepo.find();
+    } catch (e) {
+      Logger.error(productErrors.queryProduct);
 
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: productErrors.findProduct,
+          error: productErrors.queryProduct + e,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
@@ -126,12 +126,12 @@ export class ProductService {
         where: { id: productId },
       });
     } catch {
-      Logger.error(productErrors.findProduct);
+      Logger.error(productErrors.queryProduct);
 
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: productErrors.findProduct,
+          error: productErrors.queryProduct,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
@@ -181,7 +181,7 @@ export class ProductService {
     try {
       this.productRepo.delete({ id: userId });
     } catch {
-      Logger.error(productErrors.findProduct);
+      Logger.error(productErrors.queryProduct);
 
       return { success: false };
     }

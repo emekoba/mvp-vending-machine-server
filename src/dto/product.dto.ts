@@ -10,6 +10,7 @@ import {
   ValidateIf,
 } from 'class-validator';
 import { Product } from 'src/entities/product.entity';
+import { User } from 'src/entities/user.entity';
 
 export class CreateProductReq {
   @IsNotEmpty()
@@ -23,6 +24,8 @@ export class CreateProductReq {
   @IsNotEmpty()
   @IsString()
   productName: string;
+
+  user: User;
 }
 
 export class CreateProductRes {
@@ -32,7 +35,7 @@ export class CreateProductRes {
 
 export class FetchProductReq {
   productId: string;
-  userId: string;
+  // user: User;
 }
 
 export class FetchProductRes {

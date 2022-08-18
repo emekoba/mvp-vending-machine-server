@@ -11,5 +11,8 @@ export class DepositRes {
 }
 
 export class BuyRes {
+  moneySpent: string;
+  productName: string;
+  changed: string;
   success: boolean;
 }

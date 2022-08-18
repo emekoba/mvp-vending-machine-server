@@ -1,34 +1,49 @@
 import { HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { productErrors } from 'src/constants';
-import {
-  CreateProductReq,
-  CreateProductRes,
-  FetchProductReq,
-  FetchProductRes,
-  UpdateProductReq,
-  UpdateProductRes,
-} from 'src/dto/product.dto';
+import { userErrors } from 'src/constants';
+import { BuyRes, DepositReq, DepositRes } from 'src/dto/transactions.dto';
 import { Product } from 'src/entities/product.entity';
-import { isEmpty } from 'src/utils/helpers';
+import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 
 export class TransactionService {
-  constructor(
-    @InjectRepository(Product) private productRepo: Repository<Product>,
-  ) {}
+  constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
 
-  async createProduct(payload: CreateProductReq): Promise<CreateProductRes> {
-    const { amountAvailable, cost, productName } = payload;
+  async deposit(amount: string, userId: string): Promise<DepositRes> {
+    let user: User;
 
-    let newProduct: Product;
-
-    //* save new user values
+    //* check if user exists
     try {
-      newProduct = await this.productRepo.save({
-        amountAvailable,
-        cost,
-        productName,
+      user = await this.userRepo.findOne({
+        where: { id: userId },
+      });
+    } catch {
+      Logger.error(userErrors.findUser);
+
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: userErrors.findUser,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!user) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: `user with id ${userId} does not exist`,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    //* update deposit amount
+    try {
+      user = await this.userRepo.save({
+        ...user,
+        deposit: `${parseInt(amount) + parseInt(user.deposit)}`,
       });
     } catch (e) {
       Logger.error(e);
@@ -36,14 +51,40 @@ export class TransactionService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: productErrors.saveProduct + e,
+          error: userErrors.updateUser + e,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
 
     return {
-      newProduct,
+      success: true,
+    };
+  }
+
+  async buy(amount: string, userId: string): Promise<BuyRes> {
+    let newProduct: Product;
+
+    // //* save new user values
+    // try {
+    //   newProduct = await this.productRepo.save({
+    //     amountAvailable,
+    //     cost,
+    //     productName,
+    //   });
+    // } catch (e) {
+    //   Logger.error(e);
+
+    //   throw new HttpException(
+    //     {
+    //       status: HttpStatus.NOT_IMPLEMENTED,
+    //       error: productErrors.saveProduct + e,
+    //     },
+    //     HttpStatus.NOT_IMPLEMENTED,
+    //   );
+    // }
+
+    return {
       success: true,
     };
   }

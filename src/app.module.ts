@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { GET_ALL_ENTITIES, ModuleConfigs } from './constants';
 import { ProductModule } from './modules/product.module';
+import { TransactionModule } from './modules/transactions.module';
 import { UserModule } from './modules/user.module';
 import { configService } from './services/config.service';
 
@@ -13,6 +14,7 @@ import { configService } from './services/config.service';
     TypeOrmModule.forFeature(ModuleConfigs['app'].entities),
     UserModule,
     ProductModule,
+    TransactionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

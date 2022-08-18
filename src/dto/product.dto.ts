@@ -30,14 +30,18 @@ export class CreateProductRes {
   newProduct: Product;
 }
 
+export class FetchProductReq {
+  productId: string;
+  userId: string;
+}
+
 export class FetchProductRes {
   success: boolean;
   product: Product;
 }
-
-export class FetchProductReq {
-  productId: string;
-  userId: string;
+export class FetchAllProductsRes {
+  success: boolean;
+  products: Product[];
 }
 
 export class UpdateProductReq {

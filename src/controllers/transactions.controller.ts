@@ -7,22 +7,22 @@ import {
   Req,
   Res,
 } from '@nestjs/common';
-import { productMessages, productErrors } from 'src/constants';
-import { ProductService } from 'src/services/product.service';
-import { Response, Request } from 'express';
 import {
-  CreateProductReq,
-  UpdateProductReq,
-  UpdateProductRes,
-} from 'src/dto/product.dto';
+  validTransactionAmount,
+  transactionErrors,
+  transactionMessages,
+} from 'src/constants';
+import { Response, Request } from 'express';
 import { Middleware, UseMiddleware } from 'src/utils/helpers';
 import { UserService } from 'src/services/user.service';
+import { TransactionService } from 'src/services/transactions.service';
+import { DepositReq } from 'src/dto/transactions.dto';
 
 @Controller('transaction')
 export class TransactionController {
   constructor(
     private readonly userService: UserService,
-    private readonly productService: ProductService,
+    private readonly transactionService: TransactionService,
   ) {}
 
   @Middleware
@@ -38,25 +38,75 @@ export class TransactionController {
   async update(
     @Req() req: Request,
     @Res() resp: Response,
-    @Body() body: UpdateProductReq,
+    @Body() body: DepositReq,
   ) {
-    const { updatedProduct, success }: UpdateProductRes =
-      await this.productService.updateProduct(req.body);
+    const { amount } = body;
+    let userId = '8';
+
+    if (!validTransactionAmount.includes(amount)) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_ACCEPTABLE,
+          error: transactionErrors.invalidAmount,
+        },
+        HttpStatus.NOT_ACCEPTABLE,
+      );
+    }
+
+    const { success } = await this.transactionService.deposit(amount, userId);
 
     if (success) {
       resp.json({
         success,
-        message: productMessages.updateSuccessful,
+        message: transactionMessages.depositSuccessful,
         status: HttpStatus.ACCEPTED,
-        updatedProduct,
       });
     } else {
       throw new HttpException(
         {
-          status: HttpStatus.NOT_MODIFIED,
-          error: productErrors.updateFailed,
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: transactionErrors.depositFailed,
         },
-        HttpStatus.NOT_MODIFIED,
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+  }
+
+  @Post('buy')
+  // @UseMiddleware('sessionGuard')
+  async buy(
+    @Req() req: Request,
+    @Res() resp: Response,
+    @Body() body: DepositReq,
+  ) {
+    const { amount } = body;
+    let userId = '';
+
+    if (!validTransactionAmount.includes(amount)) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_ACCEPTABLE,
+          error: transactionErrors.invalidAmount,
+        },
+        HttpStatus.NOT_ACCEPTABLE,
+      );
+    }
+
+    const { success } = await this.transactionService.buy(amount, userId);
+
+    if (success) {
+      resp.json({
+        success,
+        message: transactionMessages.depositSuccessful,
+        status: HttpStatus.ACCEPTED,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: transactionErrors.depositFailed,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
       );
     }
   }

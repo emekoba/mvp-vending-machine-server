@@ -94,6 +94,33 @@ export class ProductController {
     }
   }
 
+  @Get('all')
+  // @UseMiddleware('sessionGuard')
+  async readAll(
+    @Req() req: Request,
+    @Res() resp: Response,
+    @Param('id') productId: string,
+  ) {
+    // console.log(req.body.user.id);
+    const { success, products } = await this.productService.fetchAllProducts();
+
+    if (success) {
+      resp.json({
+        status: HttpStatus.FOUND,
+        message: productMessages.fetchedAllProducts,
+        products,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: productErrors.fetchFailed,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
   @Put('update')
   @UseMiddleware('sessionGuard')
   async update(

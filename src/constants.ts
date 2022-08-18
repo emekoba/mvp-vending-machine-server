@@ -6,6 +6,8 @@ import { User } from './entities/user.entity';
 config();
 const { JWT_SECRET, JWT_EXPIRATION_TIME } = process.env;
 
+export const validTransactionAmount = ['5', '10', '20', '50', '100'];
+
 export const jwtConfig = JwtModule.register({
   secret: JWT_SECRET,
   signOptions: { expiresIn: `${JWT_EXPIRATION_TIME}` },
@@ -37,46 +39,58 @@ export const GET_ALL_ENTITIES = () => [
   ),
 ];
 
-export const appMessages = {
+export const userMessages = {
   productCreated: 'new product created successfully ',
   registerSuccessful: 'user registered successfully ',
-  loginSuccess: '',
-  fetchedUser: '',
-  updateSuccessful: '',
+  loginSuccess: 'login successful ',
+  fetchedUser: 'user fetched successfully ',
+  updateSuccessful: 'user updated successfully ',
   deletedUser: 'user deleted successfully ',
 };
 
-export const appErrors = {
+export const userErrors = {
   findUser: 'error querying user db ',
   saveUser: 'could not save user to db ',
+  updateUser: 'could not update user to db ',
   dupEmailQuery: 'query for duplicate email failed ',
   invalidPassword: '',
-  checkingPassword: '',
+  checkingPassword: 'password check failed ',
   tokenCreate: '',
   userTokenUpdate: '',
-  loginFailed: '',
-  fetchFailed: '',
-  updateFailed: '',
+  loginFailed: 'login failed',
+  fetchFailed: 'failed to fetch user ',
+  updateFailed: 'failed to update user ',
   noTokenIdMatch: '',
   invalidToken: '',
   noCookieTokenPassed: '',
   noAuthTokenPassed: '',
-  deleteFailed: '',
+  deleteFailed: 'failed to delete user ',
   usernameTaken: 'username already taken',
 };
 
 export const productMessages = {
-  createdProduct: '',
-  fetchedProduct: '',
-  updateSuccessful: '',
-  deletedSuccessful: '',
+  createdProduct: 'product created successfully ',
+  fetchedProduct: 'product found and fetched successfully ',
+  fetchedAllProducts: 'all products fetched successfully ',
+  updateSuccessful: 'product updated successfully ',
+  deletedSuccessful: 'product deleted successfully ',
 };
 
 export const productErrors = {
-  createProduct: '',
-  saveProduct: '',
-  findProduct: ' ',
-  fetchFailed: '',
-  updateFailed: '',
-  deleteFailed: '',
+  createProduct: 'failed to create product ',
+  saveProduct: 'failed to save product ',
+  findProduct: 'failed to find product ',
+  fetchFailed: 'failed to fetch product ',
+  updateFailed: 'failed to update product ',
+  deleteFailed: 'failed to delete product ',
+};
+
+export const transactionMessages = {
+  depositSuccessful: 'deposit successful ',
+};
+
+export const transactionErrors = {
+  invalidAmount:
+    'users can deposit only 5, 10, 20, 50 and 100 cent coins into their vending machine account ',
+  depositFailed: 'faild to deposit amount ',
 };

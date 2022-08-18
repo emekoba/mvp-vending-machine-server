@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import { Response, Request } from 'express';
-import { appErrors, appMessages } from 'src/constants';
+import { userErrors, userMessages } from 'src/constants';
 import {
   LoginReq,
   LoginRes,
@@ -48,7 +48,7 @@ export class UserController {
     if (success) {
       resp.json({
         success,
-        message: appMessages.registerSuccessful,
+        message: userMessages.registerSuccessful,
         status: HttpStatus.CREATED,
         createdUser,
       });
@@ -62,14 +62,14 @@ export class UserController {
     if (success) {
       resp.json({
         status: HttpStatus.FOUND,
-        message: appMessages.fetchedUser,
+        message: userMessages.fetchedUser,
         user,
       });
     } else {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
-          error: appErrors.fetchFailed,
+          error: userErrors.fetchFailed,
         },
         HttpStatus.NOT_FOUND,
       );
@@ -88,7 +88,7 @@ export class UserController {
     if (success) {
       resp.json({
         success,
-        message: appMessages.updateSuccessful,
+        message: userMessages.updateSuccessful,
         status: HttpStatus.ACCEPTED,
         updatedUser,
       });
@@ -96,7 +96,7 @@ export class UserController {
       throw new HttpException(
         {
           status: HttpStatus.NOT_MODIFIED,
-          error: appErrors.updateFailed,
+          error: userErrors.updateFailed,
         },
         HttpStatus.NOT_MODIFIED,
       );
@@ -110,13 +110,13 @@ export class UserController {
     if (success) {
       resp.json({
         status: HttpStatus.FOUND,
-        message: appMessages.deletedUser,
+        message: userMessages.deletedUser,
       });
     } else {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: appErrors.deleteFailed,
+          error: userErrors.deleteFailed,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
@@ -134,7 +134,7 @@ export class UserController {
 
       resp.json({
         status: HttpStatus.CREATED,
-        message: appMessages.loginSuccess,
+        message: userMessages.loginSuccess,
         token,
         user,
       });
@@ -142,7 +142,7 @@ export class UserController {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
-          error: appErrors.loginFailed,
+          error: userErrors.loginFailed,
         },
         HttpStatus.NOT_FOUND,
       );

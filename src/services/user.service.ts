@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { appErrors } from 'src/constants';
+import { userErrors } from 'src/constants';
 import {
   FetchUserRes,
   LoginReq,
@@ -59,7 +59,7 @@ export class UserService {
         throw new HttpException(
           {
             status: HttpStatus.UNAUTHORIZED,
-            error: appErrors.noCookieTokenPassed + e,
+            error: userErrors.noCookieTokenPassed + e,
           },
           HttpStatus.UNAUTHORIZED,
         );
@@ -71,7 +71,7 @@ export class UserService {
         throw new HttpException(
           {
             status: HttpStatus.UNAUTHORIZED,
-            error: appErrors.noAuthTokenPassed,
+            error: userErrors.noAuthTokenPassed,
           },
           HttpStatus.UNAUTHORIZED,
         );
@@ -92,7 +92,7 @@ export class UserService {
         throw new HttpException(
           {
             status: HttpStatus.UNAUTHORIZED,
-            error: appErrors.invalidToken + e,
+            error: userErrors.invalidToken + e,
           },
           HttpStatus.UNAUTHORIZED,
         );
@@ -103,7 +103,7 @@ export class UserService {
       throw new HttpException(
         {
           status: HttpStatus.UNAUTHORIZED,
-          error: appErrors.invalidToken,
+          error: userErrors.invalidToken,
         },
         HttpStatus.UNAUTHORIZED,
       );
@@ -118,7 +118,7 @@ export class UserService {
         throw new HttpException(
           {
             status: HttpStatus.NOT_FOUND,
-            error: appErrors.noTokenIdMatch,
+            error: userErrors.noTokenIdMatch,
           },
           HttpStatus.NOT_FOUND,
         );
@@ -149,12 +149,12 @@ export class UserService {
         where: { username },
       });
     } catch {
-      Logger.error(appErrors.dupEmailQuery);
+      Logger.error(userErrors.dupEmailQuery);
 
       throw new HttpException(
         {
           status: HttpStatus.CONFLICT,
-          error: appErrors.dupEmailQuery,
+          error: userErrors.dupEmailQuery,
         },
         HttpStatus.CONFLICT,
       );
@@ -188,7 +188,7 @@ export class UserService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: appErrors.saveUser + e,
+          error: userErrors.saveUser + e,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
@@ -212,12 +212,12 @@ export class UserService {
         where: { id: userId },
       });
     } catch {
-      Logger.error(appErrors.findUser);
+      Logger.error(userErrors.findUser);
 
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: appErrors.findUser,
+          error: userErrors.findUser,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
@@ -260,12 +260,12 @@ export class UserService {
         where: { id: userId },
       });
     } catch {
-      Logger.error(appErrors.findUser);
+      Logger.error(userErrors.findUser);
 
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: appErrors.findUser,
+          error: userErrors.findUser,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
@@ -288,12 +288,12 @@ export class UserService {
           where: { username },
         });
       } catch {
-        Logger.error(appErrors.findUser);
+        Logger.error(userErrors.findUser);
 
         throw new HttpException(
           {
             status: HttpStatus.NOT_IMPLEMENTED,
-            error: appErrors.findUser,
+            error: userErrors.findUser,
           },
           HttpStatus.NOT_IMPLEMENTED,
         );
@@ -303,7 +303,7 @@ export class UserService {
         throw new HttpException(
           {
             status: HttpStatus.CONFLICT,
-            error: appErrors.usernameTaken,
+            error: userErrors.usernameTaken,
           },
           HttpStatus.CONFLICT,
         );
@@ -329,7 +329,7 @@ export class UserService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: appErrors.saveUser + e,
+          error: userErrors.saveUser + e,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
@@ -354,7 +354,7 @@ export class UserService {
     try {
       this.userRepo.delete({ id: userId });
     } catch {
-      Logger.error(appErrors.findUser);
+      Logger.error(userErrors.findUser);
 
       return { success: false };
     }
@@ -373,12 +373,12 @@ export class UserService {
         where: { username },
       });
     } catch {
-      Logger.error(appErrors.findUser);
+      Logger.error(userErrors.findUser);
 
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: appErrors.findUser,
+          error: userErrors.findUser,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
@@ -398,12 +398,12 @@ export class UserService {
     //* compare provided with password in DB
     try {
       if (!(await bcrypt.compare(password, foundUser.password))) {
-        Logger.error(appErrors.invalidPassword);
+        Logger.error(userErrors.invalidPassword);
 
         throw new HttpException(
           {
             status: HttpStatus.NOT_IMPLEMENTED,
-            error: appErrors.invalidPassword,
+            error: userErrors.invalidPassword,
           },
           HttpStatus.NOT_IMPLEMENTED,
         );
@@ -414,7 +414,7 @@ export class UserService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: appErrors.checkingPassword + exp,
+          error: userErrors.checkingPassword + exp,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
@@ -433,7 +433,7 @@ export class UserService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: appErrors.tokenCreate + exp,
+          error: userErrors.tokenCreate + exp,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
@@ -451,7 +451,7 @@ export class UserService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: appErrors.userTokenUpdate + exp,
+          error: userErrors.userTokenUpdate + exp,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );

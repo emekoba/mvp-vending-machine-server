@@ -4,6 +4,7 @@ import { productErrors } from 'src/constants';
 import {
   CreateProductReq,
   CreateProductRes,
+  FetchAllProductsRes,
   FetchProductReq,
   FetchProductRes,
   UpdateProductReq,
@@ -86,6 +87,30 @@ export class ProductService {
 
     return {
       product,
+      success: true,
+    };
+  }
+
+  async fetchAllProducts(): Promise<FetchAllProductsRes> {
+    let products: Product[];
+
+    //* check if username already exists
+    try {
+      products = await this.productRepo.find({});
+    } catch {
+      Logger.error(productErrors.findProduct);
+
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: productErrors.findProduct,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return {
+      products,
       success: true,
     };
   }

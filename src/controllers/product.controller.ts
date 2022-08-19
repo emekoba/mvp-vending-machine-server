@@ -93,7 +93,6 @@ export class ProductController {
   }
 
   @Get('all')
-  // @UseMiddleware('sessionGuard')
   async readAll(
     @Req() req: Request,
     @Res() resp: Response,

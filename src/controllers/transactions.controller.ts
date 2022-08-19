@@ -13,11 +13,10 @@ import {
   transactionMessages,
 } from 'src/constants';
 import { Response, Request } from 'express';
-import { fromEnum, Middleware, UseMiddleware } from 'src/utils/helpers';
+import { Middleware, UseMiddleware } from 'src/utils/helpers';
 import { UserService } from 'src/services/user.service';
 import { TransactionService } from 'src/services/transactions.service';
-import { BuyRes, DepositReq } from 'src/dto/transactions.dto';
-import { UserRoles } from 'src/enums';
+import { BuyReq, BuyRes, DepositReq } from 'src/dto/transactions.dto';
 
 @Controller('transaction')
 export class TransactionController {
@@ -77,35 +76,18 @@ export class TransactionController {
 
   @Post('buy')
   @UseMiddleware('sessionGuard')
-  async buy(
-    @Req() req: Request,
-    @Res() resp: Response,
-    @Body() body: DepositReq,
-  ) {
-    const { amount } = body;
+  async buy(@Req() req: Request, @Res() resp: Response, @Body() body: BuyReq) {
+    const { amount, productId } = body;
 
-    if (!validTransactionAmount.includes(amount)) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_ACCEPTABLE,
-          error: transactionErrors.invalidAmount,
-        },
-        HttpStatus.NOT_ACCEPTABLE,
-      );
-    }
-
-    if (
-      req.body.user.role !==
-      fromEnum({ value: UserRoles.BUYER, enum: UserRoles })
-    ) {
-      throw new HttpException(
-        {
-          status: HttpStatus.FORBIDDEN,
-          error: transactionErrors.notBuyer,
-        },
-        HttpStatus.FORBIDDEN,
-      );
-    }
+    // if (!validTransactionAmount.includes(amount)) {
+    //   throw new HttpException(
+    //     {
+    //       status: HttpStatus.NOT_ACCEPTABLE,
+    //       error: transactionErrors.invalidAmount,
+    //     },
+    //     HttpStatus.NOT_ACCEPTABLE,
+    //   );
+    // }
 
     if (req.body.user.amount == 0) {
       throw new HttpException(
@@ -117,10 +99,11 @@ export class TransactionController {
       );
     }
 
-    const { success }: BuyRes = await this.transactionService.buy(
+    const { success }: BuyRes = await this.transactionService.buy({
       amount,
-      req.body.user.id,
-    );
+      user: req.body.user,
+      productId,
+    });
 
     if (success) {
       resp.json({

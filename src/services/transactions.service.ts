@@ -1,13 +1,23 @@
 import { HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { userErrors } from 'src/constants';
-import { BuyRes, DepositReq, DepositRes } from 'src/dto/transactions.dto';
+import { productErrors, transactionErrors, userErrors } from 'src/constants';
+import {
+  BuyReq,
+  BuyRes,
+  DepositReq,
+  DepositRes,
+} from 'src/dto/transactions.dto';
 import { Product } from 'src/entities/product.entity';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
+import { fromEnum } from 'src/utils/helpers';
+import { UserRoles } from 'src/enums';
 
 export class TransactionService {
-  constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
+  constructor(
+    @InjectRepository(User) private userRepo: Repository<User>,
+    @InjectRepository(Product) private productRepo: Repository<Product>,
+  ) {}
 
   async deposit(amount: string, userId: string): Promise<DepositRes> {
     let user: User;
@@ -62,30 +72,69 @@ export class TransactionService {
     };
   }
 
-  async buy(amount: string, userId: string): Promise<BuyRes> {
-    let product: Product;
+  async buy(payload: BuyReq): Promise<BuyRes> {
+    const { amount, user, productId } = payload;
+
+    let product: Product, foundUser: User;
     let moneySpent;
     let productName;
     let changed;
 
-    // //* save new user values
-    // try {
-    //   product = await this.productRepo.save({
-    //     amountAvailable,
-    //     cost,
-    //     productName,
-    //   });
-    // } catch (e) {
-    //   Logger.error(e);
+    //* check if username already exists
+    try {
+      foundUser = await this.userRepo.findOne({
+        where: { id: user.id },
+      });
+    } catch {
+      Logger.error(userErrors.findUser);
 
-    //   throw new HttpException(
-    //     {
-    //       status: HttpStatus.NOT_IMPLEMENTED,
-    //       error: productErrors.saveProduct + e,
-    //     },
-    //     HttpStatus.NOT_IMPLEMENTED,
-    //   );
-    // }
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: userErrors.findUser,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (
+      foundUser.role !== fromEnum({ value: UserRoles.BUYER, enum: UserRoles })
+    ) {
+      throw new HttpException(
+        {
+          status: HttpStatus.FORBIDDEN,
+          error: transactionErrors.notBuyer,
+        },
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
+    //* save new user values
+    try {
+      product = await this.productRepo.findOne({
+        where: { id: productId },
+      });
+    } catch (e) {
+      Logger.error(e);
+
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: productErrors.saveProduct + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (parseInt(product.cost) > parseInt(amount)) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_ACCEPTABLE,
+          error: transactionErrors.insufficientFunds,
+        },
+        HttpStatus.NOT_ACCEPTABLE,
+      );
+    }
 
     return {
       moneySpent,

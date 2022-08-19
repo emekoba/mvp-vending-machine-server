@@ -97,4 +97,7 @@ export const transactionErrors = {
   walletEmpty: 'your account is empty. deposit some money to continue ',
   notBuyer: 'User must be buyer to proceed ',
   resetFailed: 'Failed to reset user ',
+  insufficientFunds:
+    'insufficient funds. Please deposit some money an try again ',
+  insufficientAmount: 'insufficient funds. item costs more than amount sent ',
 };

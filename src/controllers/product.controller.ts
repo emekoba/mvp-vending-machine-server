@@ -21,6 +21,8 @@ import {
 } from 'src/dto/product.dto';
 import { Middleware, UseMiddleware } from 'src/utils/helpers';
 import { UserService } from 'src/services/user.service';
+const { COOKIES } = process.env;
+
 @Controller('product')
 export class ProductController {
   constructor(
@@ -32,7 +34,7 @@ export class ProductController {
   async sessionGuard(req, resp) {
     await this.userService.verifyToken(req, resp, {
       noTimeout: true,
-      useCookies: true,
+      useCookies: COOKIES.toLowerCase() === 'true',
     });
   }
 
@@ -64,7 +66,30 @@ export class ProductController {
     }
   }
 
-  @Get(':id')
+  @Get('all')
+  @UseMiddleware('sessionGuard')
+  async readAll(@Req() req: Request, @Res() resp: Response) {
+    const { success, products } = await this.productService.fetchAllProducts(
+      req.body.user,
+    );
+    if (success) {
+      resp.json({
+        status: HttpStatus.FOUND,
+        message: productMessages.fetchedAllProducts,
+        products,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: productErrors.fetchFailed,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  @Get('/:id')
   async read(
     @Req() req: Request,
     @Res() resp: Response,
@@ -80,32 +105,6 @@ export class ProductController {
         status: HttpStatus.FOUND,
         message: productMessages.fetchedProduct,
         product,
-      });
-    } else {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_FOUND,
-          error: productErrors.fetchFailed,
-        },
-        HttpStatus.NOT_FOUND,
-      );
-    }
-  }
-
-  @Get('all')
-  async readAll(
-    @Req() req: Request,
-    @Res() resp: Response,
-    @Param('id') productId: string,
-  ) {
-    // console.log(req.body.user.id);
-    const { success, products } = await this.productService.fetchAllProducts();
-
-    if (success) {
-      resp.json({
-        status: HttpStatus.FOUND,
-        message: productMessages.fetchedAllProducts,
-        products,
       });
     } else {
       throw new HttpException(
@@ -148,12 +147,8 @@ export class ProductController {
 
   @Delete('delete/:id')
   @UseMiddleware('sessionGuard')
-  async delete(
-    @Req() req: Request,
-    @Res() resp: Response,
-    @Param('id') id: string,
-  ) {
-    const { success } = await this.productService.deleteProduct(id);
+  async delete(@Req() req: Request, @Res() resp: Response) {
+    const { success } = await this.productService.deleteProduct(req.params.id);
 
     if (success) {
       resp.json({

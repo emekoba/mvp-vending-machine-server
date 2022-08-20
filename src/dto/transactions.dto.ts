@@ -21,6 +21,6 @@ export class BuyReq {
 export class BuyRes {
   moneySpent: string;
   productName: string;
-  changed: string;
+  change: string;
   success: boolean;
 }

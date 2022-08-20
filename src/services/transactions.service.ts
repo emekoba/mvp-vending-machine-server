@@ -10,7 +10,7 @@ import {
 import { Product } from 'src/entities/product.entity';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
-import { fromEnum } from 'src/utils/helpers';
+import { fromEnum, toEnum } from 'src/utils/helpers';
 import { UserRoles } from 'src/enums';
 
 export class TransactionService {
@@ -76,11 +76,8 @@ export class TransactionService {
     const { amount, user, productId } = payload;
 
     let product: Product, foundUser: User;
-    let moneySpent;
-    let productName;
-    let changed;
 
-    //* check if username already exists
+    //* fetch recent* user data
     try {
       foundUser = await this.userRepo.findOne({
         where: { id: user.id },
@@ -97,9 +94,8 @@ export class TransactionService {
       );
     }
 
-    if (
-      foundUser.role !== fromEnum({ value: UserRoles.BUYER, enum: UserRoles })
-    ) {
+    //* ensure user is buyer
+    if (foundUser.role !== UserRoles.BUYER) {
       throw new HttpException(
         {
           status: HttpStatus.FORBIDDEN,
@@ -109,7 +105,7 @@ export class TransactionService {
       );
     }
 
-    //* save new user values
+    //* find product by id provided
     try {
       product = await this.productRepo.findOne({
         where: { id: productId },
@@ -126,7 +122,21 @@ export class TransactionService {
       );
     }
 
-    if (parseInt(product.cost) > parseInt(amount)) {
+    if (!product) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_ACCEPTABLE,
+          error: productErrors.foundProduct,
+        },
+        HttpStatus.NOT_ACCEPTABLE,
+      );
+    }
+
+    //* assert if user can afford product
+    if (
+      parseInt(product.cost) * parseInt(amount) >
+      parseInt(foundUser.deposit)
+    ) {
       throw new HttpException(
         {
           status: HttpStatus.NOT_ACCEPTABLE,
@@ -136,10 +146,64 @@ export class TransactionService {
       );
     }
 
+    //* assert product stock
+    if (parseInt(product.amountAvailable) < parseInt(amount)) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_ACCEPTABLE,
+          error: transactionErrors.insufficientProduct,
+        },
+        HttpStatus.NOT_ACCEPTABLE,
+      );
+    }
+
+    console.log(
+      product,
+      product.amountAvailable,
+      amount,
+      parseInt(product.amountAvailable) - parseInt(amount),
+    );
+
+    if (parseInt(product.amountAvailable) !== 0) {
+      //* debit user
+      foundUser = await this.userRepo.save({
+        ...foundUser,
+        deposit: `${parseInt(foundUser.deposit) - parseInt(product.cost)}`,
+      });
+
+      //* update stock for product
+      try {
+        product = await this.productRepo.save({
+          ...product,
+          amountAvailable: `${
+            parseInt(product.amountAvailable) - parseInt(amount)
+          }`,
+        });
+      } catch (e) {
+        Logger.error(e);
+
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_IMPLEMENTED,
+            error: transactionErrors.finalisingTransaction + e,
+          },
+          HttpStatus.NOT_IMPLEMENTED,
+        );
+      }
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: productErrors.outOfStock,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
     return {
-      moneySpent,
-      productName,
-      changed,
+      moneySpent: product.cost,
+      productName: product.productName,
+      change: foundUser.deposit,
       success: true,
     };
   }

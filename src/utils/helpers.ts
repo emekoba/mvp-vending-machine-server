@@ -2,7 +2,7 @@ import * as winston from 'winston';
 const { combine, label, timestamp, printf } = winston.format;
 class toEnumDto {
   enum: any;
-  value: string;
+  value: any;
 }
 class fromEnumDto {
   enum: any;

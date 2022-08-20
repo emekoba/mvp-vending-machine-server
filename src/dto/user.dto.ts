@@ -45,8 +45,6 @@ export class FetchUserRes {
 }
 
 export class UpdateUserReq {
-  @IsString()
-  @IsNotEmpty()
   userId: string;
   username: string;
   role: string;

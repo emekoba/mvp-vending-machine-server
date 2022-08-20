@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { productErrors } from 'src/constants';
+import { productErrors, userErrors } from 'src/constants';
 import {
   CreateProductReq,
   CreateProductRes,
@@ -11,17 +11,48 @@ import {
   UpdateProductRes,
 } from 'src/dto/product.dto';
 import { Product } from 'src/entities/product.entity';
-import { isEmpty } from 'src/utils/helpers';
+import { User } from 'src/entities/user.entity';
+import { UserRoles } from 'src/enums';
+import { fromEnum, isEmpty, toEnum } from 'src/utils/helpers';
 import { Repository } from 'typeorm';
 
 export class ProductService {
   constructor(
     @InjectRepository(Product) private productRepo: Repository<Product>,
+    @InjectRepository(User) private userRepo: Repository<User>,
   ) {}
 
   async createProduct(payload: CreateProductReq): Promise<CreateProductRes> {
     const { amountAvailable, cost, productName, user } = payload;
-    let newProduct: Product;
+    let newProduct: Product, foundUser: User;
+
+    //* fetch recent* user data
+    try {
+      foundUser = await this.userRepo.findOne({
+        where: { id: user.id },
+      });
+    } catch {
+      Logger.error(userErrors.findUser);
+
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: userErrors.findUser,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    //* ensure user is seller
+    if (foundUser.role === UserRoles.SELLER) {
+      throw new HttpException(
+        {
+          status: HttpStatus.FORBIDDEN,
+          error: productErrors.notSeller,
+        },
+        HttpStatus.FORBIDDEN,
+      );
+    }
 
     //* save new product values
     try {
@@ -91,12 +122,21 @@ export class ProductService {
     };
   }
 
-  async fetchAllProducts(): Promise<FetchAllProductsRes> {
+  async fetchAllProducts(user): Promise<FetchAllProductsRes> {
     let products: Product[];
 
-    //* fetch all users
+    //* fetch all products
     try {
-      products = await this.productRepo.find();
+      products = await this.productRepo.find(
+        user.role !== UserRoles.SELLER
+          ? {
+              order: { createdAt: 'DESC' },
+            }
+          : {
+              where: { user: { id: user.id } },
+              order: { createdAt: 'DESC' },
+            },
+      );
     } catch (e) {
       Logger.error(productErrors.queryProduct);
 
@@ -177,11 +217,11 @@ export class ProductService {
     };
   }
 
-  async deleteProduct(userId: string): Promise<any> {
+  async deleteProduct(productId: string): Promise<any> {
     try {
-      this.productRepo.delete({ id: userId });
-    } catch {
-      Logger.error(productErrors.queryProduct);
+      await this.productRepo.delete({ id: productId });
+    } catch (e) {
+      Logger.error(productErrors.deleteFailed + e);
 
       return { success: false };
     }

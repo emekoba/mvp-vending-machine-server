@@ -63,7 +63,7 @@ export const userErrors = {
   noTokenIdMatch: 'invalid destructured Id',
   invalidToken: 'token expired. Please login to continue',
   noCookieTokenPassed: '',
-  noAuthTokenPassed: '',
+  noAuthTokenPassed: 'No auth token passed',
   deleteFailed: 'failed to delete user ',
   usernameTaken: 'username already taken',
 };
@@ -83,14 +83,19 @@ export const productErrors = {
   fetchFailed: 'failed to fetch product ',
   updateFailed: 'failed to update product ',
   deleteFailed: 'failed to delete product ',
+  notSeller: 'only sellers can create products ',
+  outOfStock: 'product is currently out of stock ',
+  foundProduct: 'product not found ',
 };
 
 export const transactionMessages = {
   depositSuccessful: 'deposit successful ',
   resetSuccessful: 'reset successful ',
+  purchaseSuccessful: 'purchase successful',
 };
 
 export const transactionErrors = {
+  finalisingTransaction: 'Error finalising transaction',
   invalidAmount:
     'users can deposit only 5, 10, 20, 50 and 100 cent coins into their vending machine account ',
   depositFailed: 'faild to deposit amount ',
@@ -98,6 +103,8 @@ export const transactionErrors = {
   notBuyer: 'User must be buyer to proceed ',
   resetFailed: 'Failed to reset user ',
   insufficientFunds:
-    'insufficient funds. Please deposit some money an try again ',
+    'insufficient funds. Please deposit some money and try again ',
+  insufficientProduct:
+    'seller does not have enough product to satisfy the quantity requested',
   insufficientAmount: 'insufficient funds. item costs more than amount sent ',
 };

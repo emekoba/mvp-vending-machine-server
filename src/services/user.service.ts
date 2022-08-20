@@ -1,7 +1,11 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { userErrors } from 'src/constants';
+import {
+  transactionErrors,
+  userErrors,
+  validTransactionAmount,
+} from 'src/constants';
 import {
   FetchUserRes,
   LoginReq,
@@ -170,13 +174,25 @@ export class UserService {
       );
     }
 
+    //* assert deposit amount is valid
+
+    if (!validTransactionAmount.includes(deposit)) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_ACCEPTABLE,
+          error: transactionErrors.invalidAmount,
+        },
+        HttpStatus.NOT_ACCEPTABLE,
+      );
+    }
+
     //* save new user values
     try {
       password = await bcrypt.hash(password, parseInt(BCRYPT_SALT));
       createdUser = await this.userRepo.save({
         username,
         password,
-        role: toEnum({
+        role: fromEnum({
           value: role,
           enum: UserRoles,
         }),
@@ -318,7 +334,7 @@ export class UserService {
         deposit: isEmpty(deposit) ? foundUser.deposit : deposit,
         role: isEmpty(role)
           ? foundUser.role
-          : toEnum({
+          : fromEnum({
               value: role,
               enum: UserRoles,
             }),
@@ -343,7 +359,7 @@ export class UserService {
       updatedUser: {
         ...updatedUser,
         role: fromEnum({
-          value: foundUser.role,
+          value: updatedUser.role,
           enum: UserRoles,
         }),
       },
@@ -389,7 +405,7 @@ export class UserService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
-          error: `user with username ${username} does not exists`,
+          error: `user with username ${username} does not exist`,
         },
         HttpStatus.NOT_FOUND,
       );

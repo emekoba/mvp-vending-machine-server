@@ -22,7 +22,9 @@ import {
   UpdateUserReq,
   UpdateUserRes,
 } from 'src/dto/user.dto';
-import { Middleware } from 'src/utils/helpers';
+import { Middleware, UseMiddleware } from 'src/utils/helpers';
+
+const { COOKIES } = process.env;
 
 @Controller('user')
 export class UserController {
@@ -32,7 +34,7 @@ export class UserController {
   async sessionGuard(req, resp) {
     await this.userService.verifyToken(req, resp, {
       noTimeout: true,
-      useCookies: true,
+      useCookies: COOKIES.toLowerCase() === 'true',
     });
   }
 
@@ -77,13 +79,17 @@ export class UserController {
   }
 
   @Put('update')
+  @UseMiddleware('sessionGuard')
   async update(
     @Req() req: Request,
     @Res() resp: Response,
     @Body() body: UpdateUserReq,
   ) {
     const { updatedUser, success }: UpdateUserRes =
-      await this.userService.updateUser(req.body);
+      await this.userService.updateUser({
+        ...req.body,
+        userId: req.body.user.id,
+      });
 
     if (success) {
       resp.json({

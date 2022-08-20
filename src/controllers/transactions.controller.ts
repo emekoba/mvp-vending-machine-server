@@ -18,6 +18,8 @@ import { UserService } from 'src/services/user.service';
 import { TransactionService } from 'src/services/transactions.service';
 import { BuyReq, BuyRes, DepositReq } from 'src/dto/transactions.dto';
 
+const { COOKIES } = process.env;
+
 @Controller('transaction')
 export class TransactionController {
   constructor(
@@ -29,18 +31,18 @@ export class TransactionController {
   async sessionGuard(req, resp) {
     await this.userService.verifyToken(req, resp, {
       noTimeout: true,
-      useCookies: true,
+      useCookies: COOKIES.toLowerCase() === 'true',
     });
   }
 
   @Post('deposit')
   @UseMiddleware('sessionGuard')
-  async update(
+  async deposit(
     @Req() req: Request,
     @Res() resp: Response,
     @Body() body: DepositReq,
   ) {
-    const { amount } = body;
+    const { amount } = req.body;
 
     if (!validTransactionAmount.includes(amount)) {
       throw new HttpException(
@@ -77,39 +79,16 @@ export class TransactionController {
   @Post('buy')
   @UseMiddleware('sessionGuard')
   async buy(@Req() req: Request, @Res() resp: Response, @Body() body: BuyReq) {
-    const { amount, productId } = body;
+    const res: BuyRes = await this.transactionService.buy(req.body);
 
-    // if (!validTransactionAmount.includes(amount)) {
-    //   throw new HttpException(
-    //     {
-    //       status: HttpStatus.NOT_ACCEPTABLE,
-    //       error: transactionErrors.invalidAmount,
-    //     },
-    //     HttpStatus.NOT_ACCEPTABLE,
-    //   );
-    // }
+    if (res.success) {
+      delete res.success;
 
-    if (req.body.user.amount == 0) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_ACCEPTABLE,
-          error: transactionErrors.walletEmpty,
-        },
-        HttpStatus.NOT_ACCEPTABLE,
-      );
-    }
-
-    const { success }: BuyRes = await this.transactionService.buy({
-      amount,
-      user: req.body.user,
-      productId,
-    });
-
-    if (success) {
       resp.json({
-        success,
-        message: transactionMessages.depositSuccessful,
+        success: true,
+        message: transactionMessages.purchaseSuccessful,
         status: HttpStatus.ACCEPTED,
+        logs: res,
       });
     } else {
       throw new HttpException(

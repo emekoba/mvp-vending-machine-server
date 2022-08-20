@@ -5,7 +5,7 @@ import {
   transactionErrors,
   userErrors,
   validTransactionAmount,
-} from 'src/constants';
+} from '../constants';
 import {
   FetchUserRes,
   LoginReq,
@@ -14,13 +14,13 @@ import {
   RegisterRes,
   UpdateUserReq,
   UpdateUserRes,
-} from 'src/dto/user.dto';
-import { User } from 'src/entities/user.entity';
-import { fromEnum, isEmpty, toEnum } from 'src/utils/helpers';
+} from '../dto/user.dto';
+import { User } from '../entities/user.entity';
+import { fromEnum, isEmpty, toEnum } from '../utils/helpers';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { config } from 'dotenv';
-import { UserRoles } from 'src/enums';
+import { UserRoles } from '../enums';
 
 config();
 const { BCRYPT_SALT } = process.env;

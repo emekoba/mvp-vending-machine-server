@@ -11,16 +11,16 @@ import {
   Req,
   Res,
 } from '@nestjs/common';
-import { productMessages, productErrors } from 'src/constants';
-import { ProductService } from 'src/services/product.service';
+import { productMessages, productErrors } from '../constants';
+import { ProductService } from '../services/product.service';
 import { Response, Request } from 'express';
 import {
   CreateProductReq,
   UpdateProductReq,
   UpdateProductRes,
-} from 'src/dto/product.dto';
-import { Middleware, UseMiddleware } from 'src/utils/helpers';
-import { UserService } from 'src/services/user.service';
+} from '../dto/product.dto';
+import { Middleware, UseMiddleware } from '../utils/helpers';
+import { UserService } from '../services/user.service';
 const { COOKIES } = process.env;
 
 @Controller('product')

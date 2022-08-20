@@ -11,12 +11,12 @@ import {
   validTransactionAmount,
   transactionErrors,
   transactionMessages,
-} from 'src/constants';
+} from '../constants';
 import { Response, Request } from 'express';
-import { Middleware, UseMiddleware } from 'src/utils/helpers';
-import { UserService } from 'src/services/user.service';
-import { TransactionService } from 'src/services/transactions.service';
-import { BuyReq, BuyRes, DepositReq } from 'src/dto/transactions.dto';
+import { Middleware, UseMiddleware } from '../utils/helpers';
+import { UserService } from '../services/user.service';
+import { TransactionService } from '../services/transactions.service';
+import { BuyReq, BuyRes, DepositReq } from '../dto/transactions.dto';
 
 const { COOKIES } = process.env;
 

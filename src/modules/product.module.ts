@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { jwtConfig, ModuleConfigs } from 'src/constants';
-import { UserService } from 'src/services/user.service';
+import { jwtConfig, ModuleConfigs } from '../constants';
+import { UserService } from '../services/user.service';
 import { ProductController } from '../controllers/product.controller';
 import { ProductService } from '../services/product.service';
 

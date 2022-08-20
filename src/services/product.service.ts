@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { productErrors, userErrors } from 'src/constants';
+import { productErrors, userErrors } from '../constants';
 import {
   CreateProductReq,
   CreateProductRes,
@@ -9,11 +9,11 @@ import {
   FetchProductRes,
   UpdateProductReq,
   UpdateProductRes,
-} from 'src/dto/product.dto';
-import { Product } from 'src/entities/product.entity';
-import { User } from 'src/entities/user.entity';
-import { UserRoles } from 'src/enums';
-import { fromEnum, isEmpty, toEnum } from 'src/utils/helpers';
+} from '../dto/product.dto';
+import { Product } from '../entities/product.entity';
+import { User } from '../entities/user.entity';
+import { UserRoles } from '../enums';
+import { fromEnum, isEmpty, toEnum } from '../utils/helpers';
 import { Repository } from 'typeorm';
 
 export class ProductService {
@@ -44,7 +44,7 @@ export class ProductService {
     }
 
     //* ensure user is seller
-    if (foundUser.role === UserRoles.SELLER) {
+    if (foundUser.role !== UserRoles.SELLER) {
       throw new HttpException(
         {
           status: HttpStatus.FORBIDDEN,

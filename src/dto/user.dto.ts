@@ -5,8 +5,8 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { Match } from 'src/utils/decorators';
-import { User } from 'src/entities/user.entity';
+import { Match } from '../utils/decorators';
+import { User } from '../entities/user.entity';
 
 export class RegisterReq {
   @IsNotEmpty()

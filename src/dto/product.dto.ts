@@ -9,8 +9,8 @@ import {
   MinLength,
   ValidateIf,
 } from 'class-validator';
-import { Product } from 'src/entities/product.entity';
-import { User } from 'src/entities/user.entity';
+import { Product } from '../entities/product.entity';
+import { User } from '../entities/user.entity';
 
 export class CreateProductReq {
   @IsNotEmpty()

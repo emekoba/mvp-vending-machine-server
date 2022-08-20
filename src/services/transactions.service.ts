@@ -1,17 +1,12 @@
 import { HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { productErrors, transactionErrors, userErrors } from 'src/constants';
-import {
-  BuyReq,
-  BuyRes,
-  DepositReq,
-  DepositRes,
-} from 'src/dto/transactions.dto';
-import { Product } from 'src/entities/product.entity';
-import { User } from 'src/entities/user.entity';
+import { productErrors, transactionErrors, userErrors } from '../constants';
+import { BuyReq, BuyRes, DepositRes } from '../dto/transactions.dto';
+import { Product } from '../entities/product.entity';
+import { User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
-import { fromEnum, toEnum } from 'src/utils/helpers';
-import { UserRoles } from 'src/enums';
+import { fromEnum, toEnum } from '../utils/helpers';
+import { UserRoles } from '../enums';
 
 export class TransactionService {
   constructor(
@@ -168,7 +163,10 @@ export class TransactionService {
       //* debit user
       foundUser = await this.userRepo.save({
         ...foundUser,
-        deposit: `${parseInt(foundUser.deposit) - parseInt(product.cost)}`,
+        deposit: `${
+          parseInt(foundUser.deposit) -
+          parseInt(product.cost) * parseInt(amount)
+        }`,
       });
 
       //* update stock for product

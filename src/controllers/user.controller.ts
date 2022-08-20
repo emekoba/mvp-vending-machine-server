@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import { Response, Request } from 'express';
-import { userErrors, userMessages } from 'src/constants';
+import { userErrors, userMessages } from '../constants';
 import {
   LoginReq,
   LoginRes,
@@ -21,8 +21,8 @@ import {
   RegisterRes,
   UpdateUserReq,
   UpdateUserRes,
-} from 'src/dto/user.dto';
-import { Middleware, UseMiddleware } from 'src/utils/helpers';
+} from '../dto/user.dto';
+import { Middleware, UseMiddleware } from '../utils/helpers';
 
 const { COOKIES } = process.env;
 

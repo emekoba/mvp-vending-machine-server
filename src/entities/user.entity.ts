@@ -1,4 +1,4 @@
-import { UserRoles } from 'src/enums';
+import { UserRoles } from '../enums';
 import {
   Entity,
   PrimaryGeneratedColumn,

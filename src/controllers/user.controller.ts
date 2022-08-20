@@ -23,6 +23,8 @@ import {
   UpdateUserRes,
 } from '../dto/user.dto';
 import { Middleware, UseMiddleware } from '../utils/helpers';
+import { config } from 'dotenv';
+config();
 
 const { COOKIES } = process.env;
 

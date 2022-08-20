@@ -21,6 +21,9 @@ import {
 } from '../dto/product.dto';
 import { Middleware, UseMiddleware } from '../utils/helpers';
 import { UserService } from '../services/user.service';
+import { config } from 'dotenv';
+config();
+
 const { COOKIES } = process.env;
 
 @Controller('product')

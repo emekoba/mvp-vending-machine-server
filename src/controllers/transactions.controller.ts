@@ -17,6 +17,8 @@ import { Middleware, UseMiddleware } from '../utils/helpers';
 import { UserService } from '../services/user.service';
 import { TransactionService } from '../services/transactions.service';
 import { BuyReq, BuyRes, DepositReq } from '../dto/transactions.dto';
+import { config } from 'dotenv';
+config();
 
 const { COOKIES } = process.env;
 

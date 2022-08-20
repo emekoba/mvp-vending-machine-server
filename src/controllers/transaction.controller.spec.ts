@@ -2,18 +2,19 @@ import { Test } from '@nestjs/testing';
 import { TransactionService } from '../services/transactions.service';
 import { TransactionController } from './transactions.controller';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { getRepositoryToken } from '@nestjs/typeorm';
+import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { createMockRepository } from '../utils/mockRepository';
 import { Product } from '../entities/product.entity';
 import { User } from '../entities/user.entity';
 import {
   mockBuyReq,
-  mockBuyRequest,
   mockBuyRes,
   mockRequest,
   mockResponse,
 } from '../utils/mockObject';
 import { ValidateServiceRequest } from '../utils/validate.service.request';
+import { ModuleConfigs } from '../constants';
+import { UserService } from '../services/user.service';
 
 describe('TransactionController', () => {
   let controller: TransactionController;
@@ -22,6 +23,9 @@ describe('TransactionController', () => {
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
+      imports: [
+        TypeOrmModule.forFeature(ModuleConfigs['transactions'].entities),
+      ],
       controllers: [TransactionController],
       providers: [
         {
@@ -32,6 +36,7 @@ describe('TransactionController', () => {
           provide: getRepositoryToken(User),
           useValue: createMockRepository(),
         },
+        UserService,
         TransactionService,
       ],
     }).compile();
@@ -47,7 +52,7 @@ describe('TransactionController', () => {
         console.log('this is mock', token);
       });
     // jest
-    //   .spyOn(TransactionService, 'verifyToken')
+    //   .spyOn(UserSer, 'verifyToken')
     //   .mockImplementation(async (token: string) => {
     //     console.log('this is mock', token);
     //   });
@@ -93,16 +98,4 @@ describe('TransactionController', () => {
       }
     });
   });
-
-  // describe('update activityType should return ok', () => {
-  //   it('update activityType', async () => {
-  //     const res = mockResponse();
-  //     jest
-  //       .spyOn(transactionService, 'updateActivityLog')
-  //       .mockResolvedValueOnce(mockedupdateActivityRes);
-  //     mockRequest.body = mockedupdateActivityReq;
-  //     await controller.updateActivityCtlr(mockRequest, res);
-  //     expect(transactionService.updateActivityLog).toHaveBeenCalledTimes(1);
-  //   });
-  // });
 });
